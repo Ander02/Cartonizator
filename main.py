@@ -29,28 +29,17 @@ def cartonize(img, edge_mask_line_size, edger_mask_blur_value, number_of_colors,
     colors = color_quantization(img, number_of_colors)
     colors = bileteral_filter(colors, biletareal_filter_d_parameter, biletareal_filter_sigmaColor, biletareal_filter_sigmaSpace)
     cartoon = cv2.bitwise_and(colors, colors, mask=edges)
+    cartoon = cv2.pencilSketch(cartoon, sigma_s=60, sigma_r=0.5, shade_factor=0.02)
     return cartoon
 
-mouth_cascade = cv2.CascadeClassifier('haarcascades/haarcascade_mcs_mouth.xml')
-
-if mouth_cascade.empty():
-  raise IOError('Unable to load the mouth cascade classifier xml file')
-
 cap = cv2.VideoCapture(0)
-ds_factor = 0.5
+ds_factor = 1
 
 while True:
     ret, frame = cap.read()
     frame = cv2.resize(frame, None, fx=ds_factor, fy=ds_factor, interpolation=cv2.INTER_AREA)
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # mouth_rects = mouth_cascade.detectMultiScale(gray, 1.7, 11)
-    # for (x,y,w,h) in mouth_rects:
-    #     y = int(y - 0.15*h)
-    #     cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0), 3)
-    #     break
-
-    cv2.imshow('Mouth Detector', cartonize(frame, edge_mask_line_size=13, edger_mask_blur_value=13, number_of_colors=16, biletareal_filter_d_parameter=2, biletareal_filter_sigmaColor=100, biletareal_filter_sigmaSpace=300))
+    cv2.imshow('Mouth Detector', cartonize(frame, edge_mask_line_size=13, edger_mask_blur_value=13, number_of_colors=32, biletareal_filter_d_parameter=2, biletareal_filter_sigmaColor=100, biletareal_filter_sigmaSpace=300) )
 
     c = cv2.waitKey(1)
     if c == 27:

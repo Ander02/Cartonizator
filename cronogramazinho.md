@@ -13,3 +13,4 @@ Links e Referências
 - https://realpython.com/traditional-face-detection-python/
 - https://towardsdatascience.com/turn-photos-into-cartoons-using-python-bb1a9f578a7e
 - https://analyticsindiamag.com/converting-an-image-to-a-cartoon/
+- https://towardsdatascience.com/using-opencv-to-catoonize-an-image-1211473941b6
