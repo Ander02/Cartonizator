@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
 def edge_mask(img, line_size, blur_value):
   gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
@@ -24,22 +25,32 @@ def color_quantization(img, k):
 def bileteral_filter(img, d, sigmaColor, sigmaSpace):
     return cv2.bilateralFilter(img, d=d, sigmaColor=sigmaColor,sigmaSpace=sigmaSpace)
 
-def cartonize(img, edge_mask_line_size, edger_mask_blur_value, number_of_colors, biletareal_filter_d_parameter, biletareal_filter_sigmaColor, biletareal_filter_sigmaSpace):
+def cartonize(img, edge_mask_line_size, edger_mask_blur_value, number_of_colors, biletareal_filter_d_parameter, biletareal_filter_sigmaColor, biletareal_filter_sigmaSpace, pencil_sigma_space, pencil_sigma_radius, pencil_shade_factor):
     edges = edge_mask(img, edge_mask_line_size, edger_mask_blur_value)
-    colors = color_quantization(img, number_of_colors)
-    colors = bileteral_filter(colors, biletareal_filter_d_parameter, biletareal_filter_sigmaColor, biletareal_filter_sigmaSpace)
+    #colors = color_quantization(img, number_of_colors)
+    colors = bileteral_filter(img, biletareal_filter_d_parameter, biletareal_filter_sigmaColor, biletareal_filter_sigmaSpace)
     cartoon = cv2.bitwise_and(colors, colors, mask=edges)
-    cartoon = cv2.pencilSketch(cartoon, sigma_s=60, sigma_r=0.5, shade_factor=0.02)
-    return cartoon
+    _ , pencil = cv2.pencilSketch(cartoon, sigma_s=pencil_sigma_space, sigma_r=pencil_sigma_radius, shade_factor=pencil_shade_factor)
+    return pencil
+
+
+print("Video Start")
 
 cap = cv2.VideoCapture(0)
-ds_factor = 1
 
 while True:
     ret, frame = cap.read()
-    frame = cv2.resize(frame, None, fx=ds_factor, fy=ds_factor, interpolation=cv2.INTER_AREA)
+    cartoon = cartonize(frame, edge_mask_line_size=3, 
+                         edger_mask_blur_value=121, 
+                         number_of_colors=128, 
+                         biletareal_filter_d_parameter=7, 
+                         biletareal_filter_sigmaColor=500, 
+                         biletareal_filter_sigmaSpace=5000, 
+                         pencil_sigma_space=65, 
+                         pencil_sigma_radius=0.08, 
+                         pencil_shade_factor=0.0105)
 
-    cv2.imshow('Mouth Detector', cartonize(frame, edge_mask_line_size=13, edger_mask_blur_value=13, number_of_colors=32, biletareal_filter_d_parameter=2, biletareal_filter_sigmaColor=100, biletareal_filter_sigmaSpace=300) )
+    cv2.imshow("Title", cartoon)
 
     c = cv2.waitKey(1)
     if c == 27:

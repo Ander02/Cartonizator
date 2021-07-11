@@ -3,3 +3,5 @@ numpy
 jupyter
 matplotlib
 dlib
+wand
+scipy
